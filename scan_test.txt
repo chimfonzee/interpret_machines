@@ -1,0 +1,2 @@
+A] SCAN (0,A), (1,B)
+B] SCAN (1,B), (0,accept)
