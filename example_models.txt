@@ -1,0 +1,48 @@
+.DATA
+
+STACK S1
+
+.LOGIC
+A] WRITE(S1) (#,B)
+B] SCAN (0,B), (1,C)
+C] SCAN (0,B), (1,C), (#,accept)
+
+0100000000
+
+.DATA
+
+STACK S1
+
+.LOGIC
+A] WRITE(S1) (#,B)
+B] SCAN (0,C), (1,D)
+C] WRITE(S1) (X,B)
+D] READ(S1) (X,E)
+E] SCAN (1,D) (#,F)
+F] READ(S1) (#,accept)
+
+0001110
+
+.DATA
+
+QUEUE Q
+
+.LOGIC
+A] WRITE(Q) (X,B)
+B] SCAN (0,C), (1,D)
+C] WRITE(Q) (X,B)
+D] READ(Q) (X,E)
+E] SCAN (1,D) (#,accept)
+F] READ(Q) (#,accept)
+
+0001111
+
+.DATA
+
+TAPE T
+
+.LOGIC
+A] RIGHT(T) (1/X,A), (#/#,B)
+B] LEFT(T) (X/#,B), (#/#,halt)
+
+1111

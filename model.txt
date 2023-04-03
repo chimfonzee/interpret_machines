@@ -1,0 +1,7 @@
+.DATA
+
+TAPE T
+
+.LOGIC
+A] RIGHT(T) (1/X,A), (#/#,B)
+B] LEFT(T) (X/#,B), (#/#,halt)
