@@ -57,4 +57,5 @@ B] DOWN(T) (#/#,E)
 C] DOWN(T) (#/#,D)
 D] DOWN(T) (#/#,accept)
 E] RIGHT(T) (1/1,C)
+
 1
