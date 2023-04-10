@@ -64,16 +64,14 @@
                     content.append(memory.slice(tapeHead + 1).join(''));
                     message.append(content);
                 }
-                else if ((!!xHead && !!yHead) || (xHead >= 0 && yHead >= 1)) {
+                else if ((!!xHead && !!yHead) || (xHead >= 0 && yHead >= 0)) {
                     var content = document.createElement('p');
                     for (var iter = 0; iter < memory.length; iter++) {
                         if (iter == yHead) {
                             content.append(document.createTextNode(key + ": " + memory[iter].slice(0, xHead).join('')));
-                            console.log(key + ": " + memory[iter].slice(0, xHead).join(''));
                             var strong = document.createElement('strong');
                             strong.style.color = "red";
                             strong.append(document.createTextNode(memory[iter][xHead]));
-                            console.log(memory[iter][xHead]);
                             content.append(strong);
                             content.append(memory[iter].slice(xHead + 1).join(''));
                         } 
@@ -97,7 +95,6 @@
             strong.style.color = "red";
             strong.append(document.createTextNode(window.input[run][tapeHead]));
             content.append(strong);
-            console.log(window.input[run])
             content.append(window.input[run].slice(tapeHead + 1));
             message = document.createElement('li');
             message.append(content);
@@ -118,7 +115,6 @@
             .then(response => response.json())
             .then((data) => {
                 var interpretMessage = document.getElementById('interpretRes');
-                console.log(data)
                 window.alert(data['message']);
             });
         }
