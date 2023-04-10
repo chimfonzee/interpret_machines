@@ -46,3 +46,15 @@ A] RIGHT(T) (1/X,A), (#/#,B)
 B] LEFT(T) (X/#,B), (#/#,halt)
 
 1111
+
+.DATA
+
+2D_TAPE T
+
+.LOGIC
+A] UP(T) (#/#,B)
+B] DOWN(T) (#/#,E)
+C] DOWN(T) (#/#,D)
+D] DOWN(T) (#/#,accept)
+E] RIGHT(T) (1/1,C)
+1

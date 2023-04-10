@@ -1,0 +1,164 @@
+<html>
+<style>
+.container {
+    display: flex
+}
+.left {
+    width: 30%
+}
+.flex {
+    flex-grow: 1
+}
+</style>
+<body>
+    <div class="container">
+        <div class="left">
+            <h3>Memory</h3>
+            <ol id="memory"></ol>
+        </div>
+        <div class="flex">
+            <h3>States</h3>
+            <ol id="states"></ol>
+        </div>
+        <div class="right">
+            <h3>Input</h3>
+            <ol id="input"></ol>
+        </div>
+    </div>
+    <div class="container">
+        <div class="left">
+            <h2>Machine Definition</h2>
+            <form action="">
+                <textarea id="definitionText" rows="30" cols="70"></textarea><br><br>
+                <button type="button" onclick="sendDefinition(event)">Interpret</button>
+            </form>
+        </div>
+        <div class="flex">
+            <h2>Input String</h2>
+            <form action="">
+                <textarea id="inputString" rows="30" cols="70"></textarea><br><br>
+                <button type="button" onclick="sendInput(event)">Run</button>
+            </form>
+        </div>
+    </div>
+    <script>
+        var ws = new WebSocket("ws://localhost:8000/ws");
+        window.input = [];
+        ws.onmessage = function (event) {
+            var data = JSON.parse(event.data);
+            console.log(data);
+            var message = document.createElement('li');
+            for (var key in data['memory']) {
+                var tapeHead = data['memory'][key]['tape_head'];
+                var xHead = data['memory'][key]['x_head'];
+                var yHead = data['memory'][key]['y_head'];
+
+                var memory = data['memory'][key]['memory'];
+                if (!!tapeHead || tapeHead >= 0) {
+                    var content = document.createElement('p');
+                    content.append(document.createTextNode(key + ": " + memory.slice(0, tapeHead).join('')));
+                    var strong = document.createElement('strong');
+                    strong.style.color = "red";
+                    strong.append(document.createTextNode(memory[tapeHead]));
+                    content.append(strong);
+                    content.append(memory.slice(tapeHead + 1).join(''));
+                    message.append(content);
+                }
+                else if ((!!xHead && !!yHead) || (xHead >= 0 && yHead >= 1)) {
+                    var content = document.createElement('p');
+                    for (var iter = 0; iter < memory.length; iter++) {
+                        if (iter == yHead) {
+                            content.append(document.createTextNode(key + ": " + memory[iter].slice(0, xHead).join('')));
+                            console.log(key + ": " + memory[iter].slice(0, xHead).join(''));
+                            var strong = document.createElement('strong');
+                            strong.style.color = "red";
+                            strong.append(document.createTextNode(memory[iter][xHead]));
+                            console.log(memory[iter][xHead]);
+                            content.append(strong);
+                            content.append(memory[iter].slice(xHead + 1).join(''));
+                        } 
+                        else content.append(document.createTextNode(key + ": " + memory[iter].join('')));
+                        if (iter + 1 != memory.length) content.append(document.createElement('br'));
+                    }
+                    message.append(content);
+                }
+                else {
+                    message.append(document.createTextNode(key + ": " + memory.join('')));
+                    message.append(document.createElement('br'));
+                }
+                document.getElementById('memory').append(message);
+            }
+
+            var tapeHead = data['tape_head'];
+            var run = data['run'];
+            content = document.createElement('p');
+            content.append(window.input[run].slice(0, tapeHead));
+            var strong = document.createElement("strong");
+            strong.style.color = "red";
+            strong.append(document.createTextNode(window.input[run][tapeHead]));
+            content.append(strong);
+            console.log(window.input[run])
+            content.append(window.input[run].slice(tapeHead + 1));
+            message = document.createElement('li');
+            message.append(content);
+            document.getElementById('input').append(message);
+
+            content = document.createTextNode(data['current_state']);
+            message = document.createElement('li');
+            message.append(content);
+            message.append(document.createElement('br'));
+            document.getElementById('states').append(message);
+        }
+        function sendDefinition(event) {
+            clearLastRun();
+            fetch('http://127.0.0.1:8000/interpret_machine', {
+                method: 'POST',
+                body: JSON.stringify({ definition: `${document.getElementById('definitionText').value}` })
+            })
+            .then(response => response.json())
+            .then((data) => {
+                var interpretMessage = document.getElementById('interpretRes');
+                console.log(data)
+                window.alert(data['message']);
+            });
+        }
+        function sendInput(event) {
+            clearLastRun();
+            lines = document.getElementById('inputString').value.split("\n")
+            for (var iter = 0; iter < lines.length; iter++) {
+                var inputString = `#${lines[iter]}#`
+                window.input.push(inputString);
+                fetch('http://127.0.0.1:8000/run', {
+                    method: 'POST',
+                    body: JSON.stringify({
+                        input_string: inputString,
+                        run: iter 
+                    })
+                })
+                .then(response => response.json())
+                .then(data => {});
+            }
+        }
+        function clearLastRun() {
+            var messages = document.getElementById('memory');
+            var states = document.getElementById('states');
+            var inputs = document.getElementById('input');
+            window.input = [];
+
+            while (!!messages.firstChild) messages.removeChild(messages.lastChild);
+            while (!!states.firstChild) states.removeChild(states.lastChild);
+            while(!!inputs.firstChild) inputs.removeChild(inputs.lastChild);
+        }
+        // window.onload = () => {
+        //     var messages = document.getElementById('memory');
+        //     var keys = Object.keys(memory);
+        //     for (var key in memory) {
+        //         var content = document.createTextNode(memory[key]);
+        //         var message = document.createElement('li');
+        //         message.append(content);
+        //         messages.append(message); 
+        //     }
+        // }
+    </script>
+</body>
+</html>
