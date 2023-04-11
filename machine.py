@@ -32,6 +32,7 @@ class Machine:
         self.head = 1
 
     async def run(self, input_string, run):
+        to_return = ''
         self.__prepare__()
         if (init_tape:=self.initial_tape) != '':
             print()
@@ -56,7 +57,7 @@ class Machine:
                     symbol = self.__scan_left__(input_string)
                     transition = (current_state, symbol)
                 elif current['state'] == 'P':
-                    self.__print__(current['to_print'])
+                    to_return = to_return + current['to_print']
                     transition = (current_state, current['to_print'])
                 elif current['state'] == 'R':
                     symbol = self.__read__(current['object_name'])
@@ -84,7 +85,7 @@ class Machine:
             'tape_head': self.head,
             'run': run
         })
-        return current_state
+        return to_return
 
     def __scan__(self, input_string):
         self.head = self.head + 1
@@ -126,5 +127,5 @@ class Machine:
         self.current_data[object_name].write(self.transitions[transition][1])
         return (current_state, symbol)
 
-    def __print__(self, output_string):
-        print(output_string)
+    # def __print__(self, output_string):
+    #     print(output_string)

@@ -7,7 +7,8 @@
     width: 30%
 }
 .flex {
-    flex-grow: 1
+    flex-grow: 1;
+    width: 30%;
 }
 </style>
 <body>
@@ -20,7 +21,7 @@
             <h3>States</h3>
             <ol id="states"></ol>
         </div>
-        <div class="right">
+        <div class="flex">
             <h3>Input</h3>
             <ol id="input"></ol>
         </div>
@@ -39,6 +40,10 @@
                 <textarea id="inputString" rows="30" cols="70"></textarea><br><br>
                 <button type="button" onclick="sendInput(event)">Run</button>
             </form>
+        </div>
+        <div class="flex">
+            <h2>Output Transducer</h2>
+            <ol id="output"></ol>
         </div>
     </div>
     <script>
@@ -132,18 +137,26 @@
                     })
                 })
                 .then(response => response.json())
-                .then(data => {});
+                .then(data => {
+                    var message = data['message'];
+                    var content = document.createTextNode(message);
+                    var output = document.createElement('li');
+                    output.append(content);
+                    document.getElementById('output').append(output);
+                });
             }
         }
         function clearLastRun() {
             var messages = document.getElementById('memory');
             var states = document.getElementById('states');
             var inputs = document.getElementById('input');
+            var outputs = document.getElementById('output');
             window.input = [];
 
             while (!!messages.firstChild) messages.removeChild(messages.lastChild);
             while (!!states.firstChild) states.removeChild(states.lastChild);
             while(!!inputs.firstChild) inputs.removeChild(inputs.lastChild);
+            while(!!outputs.firstChild) outputs.removeChild(outputs.lastChild);
         }
         // window.onload = () => {
         //     var messages = document.getElementById('memory');
